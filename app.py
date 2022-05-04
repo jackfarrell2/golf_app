@@ -12,3 +12,10 @@ cur = con.cursor()
 def homepage():
     return render_template("homepage.html")
 
+@app.route("/rounds")
+def rounds():
+    # Create a list of the round information to be passed into the template
+    rounds = []
+    for row in cur.execute("SELECT * FROM rounds WHERE user_id = 1"):
+        # To Do
+    return render_template("rounds.html", rounds=rounds)

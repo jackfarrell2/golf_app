@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Rounds
+{% endblock %}
+
+{% block main %}
+<p>This is a placeholder round page for now :)</p>
+<table>
+    <tr>
+        <th>Course</th>
+        <th>Date</th>
+        <th>1</th>
+        <th>2</th>
+        <th>3</th>
+        <th>4</th>
+        <th>5</th>
+        <th>6</th>
+        <th>7</th>
+        <th>8</th>
+        <th>9</th>
+        <th>10</th>
+        <th>11</th>
+        <th>12</th>
+        <th>13</th>
+        <th>14</th>
+        <th>15</th>
+        <th>16</th>
+        <th>17</th>
+        <th>18</th>
+    </tr>
+    {% for round in rounds %}
+    <tr>
+        <td>{{ round.course_name }}</td>
+        <td>{{ round.round_date }}</td>
+        <td>{{ round.one }}</td>
+        <td>{{ round.two }}</td>
+        <td>{{ round.three }}</td>
+        <td>{{ round.four }}</td>
+        <td>{{ round.five }}</td>
+        <td>{{ round.six }}</td>
+        <td>{{ round.seven }}</td>
+        <td>{{ round.eight }}</td>
+        <td>{{ round.nine }}</td>
+        <td>{{ round.ten }}</td>
+        <td>{{ round.eleven }}</td>
+        <td>{{ round.twelve }}</td>
+        <td>{{ round.thirteen }}</td>
+        <td>{{ round.fourteen }}</td>
+        <td>{{ round.fifteen }}</td>
+        <td>{{ round.sixteen }}</td>
+        <td>{{ round.seventeen }}</td>
+        <td>{{ round.eighteen }}</td>
+    </tr>
+</table>
+{% endblock %}
