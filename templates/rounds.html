@@ -5,30 +5,34 @@ Rounds
 {% endblock %}
 
 {% block main %}
-<p>This is a placeholder round page for now :)</p>
-<table>
-    <tr>
-        <th>Course</th>
-        <th>Date</th>
-        <th>1</th>
-        <th>2</th>
-        <th>3</th>
-        <th>4</th>
-        <th>5</th>
-        <th>6</th>
-        <th>7</th>
-        <th>8</th>
-        <th>9</th>
-        <th>10</th>
-        <th>11</th>
-        <th>12</th>
-        <th>13</th>
-        <th>14</th>
-        <th>15</th>
-        <th>16</th>
-        <th>17</th>
-        <th>18</th>
-    </tr>
+<table class="table table-sm">
+    <thead class="thead-dark">
+        <tr>
+            <th>Course</th>
+            <th>Date</th>
+            <th>1</th>
+            <th>2</th>
+            <th>3</th>
+            <th>4</th>
+            <th>5</th>
+            <th>6</th>
+            <th>7</th>
+            <th>8</th>
+            <th>9</th>
+            <th>OUT</th>
+            <th>10</th>
+            <th>11</th>
+            <th>12</th>
+            <th>13</th>
+            <th>14</th>
+            <th>15</th>
+            <th>16</th>
+            <th>17</th>
+            <th>18</th>
+            <th>IN</th>
+            <th>TOT</th>
+        </tr>
+    </thead>
     {% for round in rounds %}
     <tr>
         <td>{{ round.course_name }}</td>
@@ -42,6 +46,7 @@ Rounds
         <td>{{ round.seven }}</td>
         <td>{{ round.eight }}</td>
         <td>{{ round.nine }}</td>
+        <td></td>
         <td>{{ round.ten }}</td>
         <td>{{ round.eleven }}</td>
         <td>{{ round.twelve }}</td>
@@ -51,6 +56,9 @@ Rounds
         <td>{{ round.sixteen }}</td>
         <td>{{ round.seventeen }}</td>
         <td>{{ round.eighteen }}</td>
+        <td></td>
+        <td></td>
     </tr>
+    {% endfor %}
 </table>
 {% endblock %}
