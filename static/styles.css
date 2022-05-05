@@ -1,0 +1,27 @@
+.scorecard
+{
+    margin: auto;
+    width: 70%;
+    font-size: medium;
+    text-align: center;
+}
+
+.holes-row
+{
+    background-color: black;
+    text-align: center;
+    color:white;
+
+}
+
+.scorecard-header
+{
+    text-align: left;
+}
+
+.handicap-row
+{
+    text-align: center;
+    background-color: rgb(161, 149, 149);
+    color: black;
+}

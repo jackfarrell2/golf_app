@@ -5,60 +5,150 @@ Rounds
 {% endblock %}
 
 {% block main %}
-<table class="table table-sm">
-    <thead class="thead-dark">
-        <tr>
-            <th>Course</th>
-            <th>Date</th>
-            <th>1</th>
-            <th>2</th>
-            <th>3</th>
-            <th>4</th>
-            <th>5</th>
-            <th>6</th>
-            <th>7</th>
-            <th>8</th>
-            <th>9</th>
-            <th>OUT</th>
-            <th>10</th>
-            <th>11</th>
-            <th>12</th>
-            <th>13</th>
-            <th>14</th>
-            <th>15</th>
-            <th>16</th>
-            <th>17</th>
-            <th>18</th>
-            <th>IN</th>
-            <th>TOT</th>
-        </tr>
-    </thead>
+<div id="content" class="container-sm"> 
     {% for round in rounds %}
-    <tr>
-        <td>{{ round.course_name }}</td>
-        <td>{{ round.round_date }}</td>
-        <td>{{ round.one }}</td>
-        <td>{{ round.two }}</td>
-        <td>{{ round.three }}</td>
-        <td>{{ round.four }}</td>
-        <td>{{ round.five }}</td>
-        <td>{{ round.six }}</td>
-        <td>{{ round.seven }}</td>
-        <td>{{ round.eight }}</td>
-        <td>{{ round.nine }}</td>
-        <td></td>
-        <td>{{ round.ten }}</td>
-        <td>{{ round.eleven }}</td>
-        <td>{{ round.twelve }}</td>
-        <td>{{ round.thirteen }}</td>
-        <td>{{ round.fourteen }}</td>
-        <td>{{ round.fifteen }}</td>
-        <td>{{ round.sixteen }}</td>
-        <td>{{ round.seventeen }}</td>
-        <td>{{ round.eighteen }}</td>
-        <td></td>
-        <td></td>
-    </tr>
+    <div id="scorecard" class="scorecard">
+        <table class="table table-sm">
+            <tr class="holes-row">
+                <th class="scorecard-header">Hole</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>6</th>
+                <th>7</th>
+                <th>8</th>
+                <th>9</th>
+                <th>OUT</th>
+                <th>10</th>
+                <th>11</th>
+                <th>12</th>
+                <th>13</th>
+                <th>14</th>
+                <th>15</th>
+                <th>16</th>
+                <th>17</th>
+                <th>18</th>
+                <th>IN</th>
+                <th>TOT</th>
+            </tr>
+            <tr>
+                <td class="scorecard-header">White</td>
+                <td>{{ round.one_yard }}</td>
+                <td>{{ round.two_yard }}</td>
+                <td>{{ round.three_yard }}</td>
+                <td>{{ round.four_yard }}</td>
+                <td>{{ round.five_yard }}</td>
+                <td>{{ round.six_yard }}</td>
+                <td>{{ round.seven_yard }}</td>
+                <td>{{ round.eight_yard }}</td>
+                <td>{{ round.nine_yard }}</td>
+                <td></td>
+                <td>{{ round.ten_yard }}</td>
+                <td>{{ round.eleven_yard }}</td>
+                <td>{{ round.twelve_yard }}</td>
+                <td>{{ round.thirteen_yard }}</td>
+                <td>{{ round.fourteen_yard }}</td>
+                <td>{{ round.fifteen_yard }}</td>
+                <td>{{ round.sixteen_yard }}</td>
+                <td>{{ round.seventeen_yard }}</td>
+                <td>{{ round.eighteen_yard }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr class="handicap-row">
+                <td class="scorecard-header">Handicap</td>
+                <td>{{ round.one_handicap }}</td>
+                <td>{{ round.two_handicap }}</td>
+                <td>{{ round.three_handicap }}</td>
+                <td>{{ round.four_handicap }}</td>
+                <td>{{ round.five_handicap }}</td>
+                <td>{{ round.six_handicap }}</td>
+                <td>{{ round.seven_handicap }}</td>
+                <td>{{ round.eight_handicap }}</td>
+                <td>{{ round.nine_handicap }}</td>
+                <td></td>
+                <td>{{ round.ten_handicap }}</td>
+                <td>{{ round.eleven_handicap }}</td>
+                <td>{{ round.twelve_handicap }}</td>
+                <td>{{ round.thirteen_handicap }}</td>
+                <td>{{ round.fourteen_handicap }}</td>
+                <td>{{ round.fifteen_handicap }}</td>
+                <td>{{ round.sixteen_handicap }}</td>
+                <td>{{ round.seventeen_handicap }}</td>
+                <td>{{ round.eighteen_handicap }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="scorecard-header">{{ round.golfer_name }}</td>
+                <td class="front-nine-hole">{{ round.one }}</td>
+                <td class="front-nine-hole">{{ round.two }}</td>
+                <td class="front-nine-hole">{{ round.three }}</td>
+                <td class="front-nine-hole">{{ round.four }}</td>
+                <td class="front-nine-hole">{{ round.five }}</td>
+                <td class="front-nine-hole">{{ round.six }}</td>
+                <td class="front-nine-hole">{{ round.seven }}</td>
+                <td class="front-nine-hole">{{ round.eight }}</td>
+                <td class="front-nine-hole">{{ round.nine }}</td>
+                <td id="front-nine-sum"></td>
+                <td class="back-nine-hole">{{ round.ten }}</td>
+                <td class="back-nine-hole">{{ round.eleven }}</td>
+                <td class="back-nine-hole">{{ round.twelve }}</td>
+                <td class="back-nine-hole">{{ round.thirteen }}</td>
+                <td class="back-nine-hole">{{ round.fourteen }}</td>
+                <td class="back-nine-hole">{{ round.fifteen }}</td>
+                <td class="back-nine-hole">{{ round.sixteen }}</td>
+                <td class="back-nine-hole">{{ round.seventeen }}</td>
+                <td class="back-nine-hole">{{ round.eighteen }}</td>
+                <td id="back-nine-sum"></td>
+                <td id="total-sum"></td>
+            </tr>
+            <tr class="holes-row">
+                <td class="scorecard-header">Par</td>
+                <td>{{ round.one_par }}</td>
+                <td>{{ round.two_par }}</td>
+                <td>{{ round.three_par }}</td>
+                <td>{{ round.four_par }}</td>
+                <td>{{ round.five_par }}</td>
+                <td>{{ round.six_par }}</td>
+                <td>{{ round.seven_par }}</td>
+                <td>{{ round.eight_par }}</td>
+                <td>{{ round.nine_par }}</td>
+                <td></td>
+                <td>{{ round.ten_par }}</td>
+                <td>{{ round.eleven_par }}</td>
+                <td>{{ round.twelve_par }}</td>
+                <td>{{ round.thirteen_par }}</td>
+                <td>{{ round.fourteen_par }}</td>
+                <td>{{ round.fifteen_par }}</td>
+                <td>{{ round.sixteen_par }}</td>
+                <td>{{ round.seventeen_par }}</td>
+                <td>{{ round.eighteen_par }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <script language="javascript" type="text/javascript">
+            var each_hole = document.getElementById("scorecard").getElementsByClassName("front-nine-hole");
+            var front_nine_sum = 0;
+            for (var i = 0; i < each_hole.length; i++) {
+                    front_nine_sum += parseInt(each_hole[i].innerHTML);
+            }
+            document.getElementById("front-nine-sum").innerHTML = front_nine_sum;
+
+            var each_hole = document.getElementById("scorecard").getElementsByClassName("back-nine-hole");
+            var back_nine_sum = 0;
+            for (var i = 0; i < each_hole.length; i++) {
+                    back_nine_sum += parseInt(each_hole[i].innerHTML);
+            }
+            document.getElementById("back-nine-sum").innerHTML = back_nine_sum;
+
+            var total_sum = front_nine_sum + back_nine_sum;
+            document.getElementById("total-sum").innerHTML = total_sum;
+        </script>
+    </div>
     {% endfor %}
-</table>
+</div>
 {% endblock %}
