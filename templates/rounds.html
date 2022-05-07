@@ -6,10 +6,10 @@ Rounds
 
 {% block main %}
 <div id="content" class="container-sm"> 
-    {% for round in rounds %}
+    {% for scorecard in scorecards %}
     <div id="scorecard" class="scorecard">
-        <p class="scorecard-course-name">{{ round.course_name }}</p>
-        <p class="scorecard-course-date">{{ round.round_date }}</p>
+        <p class="scorecard-course-name">{{ scorecard.course_name }}</p>
+        <p class="scorecard-course-date">{{ scorecard.round_date }}</p>
         <table class="table table-sm">
             <tr class="holes-row">
                 <th class="scorecard-header">Hole</th>
@@ -24,18 +24,18 @@ Rounds
                     <th>TOT</th>
             </tr>
             <tr>
-                <td class="scorecard-header">{{ round.yardages[0] }}</td>
-                {% for yard in round.yardages[1:] %}
+                <td class="scorecard-header">{{ scorecard.yardages[0] }}</td>
+                {% for yard in scorecard.yardages[1:] %}
                     <td>{{ yard }}</td>
                 {% endfor %}
             </tr>
             <tr class="handicap-row">
                 <td class="scorecard-header">Handicap</td>
-                {% for handicap in round.handicaps[:9] %} 
+                {% for handicap in scorecard.handicaps[:9] %} 
                     <td>{{ handicap }}</td>
                 {% endfor %}
                     <td></td>
-                {% for handicap in round.handicaps[9:] %}
+                {% for handicap in scorecard.handicaps[9:] %}
                     <td>{{ handicap }}</td>
                 {% endfor %}
                 {% for i in range(2) %}
@@ -43,48 +43,46 @@ Rounds
                 {% endfor %}
             </tr>
             <tr class="handwritten-score">
-                <td class="scorecard-header">{{ round.scores[0] }}</td>
-                {% for score in round.scores[1:10] %}
-                    {% if score - round.pars[loop.index - 1] >= 3 %}
-                        <td class="triple-bogey-or-worse">{{ score }}</td>
-                    {% elif score - round.pars[loop.index - 1] == 2 %}
-                        <td class="double-bogey">{{ score }}</td>
-                    {% elif score - round.pars[loop.index - 1] == 0 %}
-                        <td class="par">{{ score }}</td>
-                    {% elif score - round.pars[loop.index - 1] <= 0 %}
-                        <td class="birdie-or-better">{{ score }}</td>
+                <td class="scorecard-header">{{ scorecard.strokes[0] }}</td>
+                {% for stroke in scorecard.strokes[1:10] %}
+                    {% if stroke - scorecard.pars[loop.index - 1] >= 3 %}
+                        <td class="triple-bogey-or-worse">{{ stroke }}</td>
+                    {% elif stroke - scorecard.pars[loop.index - 1] == 2 %}
+                        <td class="double-bogey">{{ stroke }}</td>
+                    {% elif stroke - scorecard.pars[loop.index - 1] == 0 %}
+                        <td class="par">{{ stroke }}</td>
+                    {% elif stroke - scorecard.pars[loop.index - 1] <= 0 %}
+                        <td class="birdie-or-better">{{ stroke }}</td>
                     {% else %}
-                        <td>{{ score }}</td>
+                        <td>{{ stroke }}</td>
                     {% endif %}
                 {% endfor %}
-                <td>{{ round.scores[10] }}</td>
-                {% for score in round.scores[11:20] %}
-                    {% if score - round.pars[loop.index + 9] >= 3 %}
-                        <td class="triple-bogey-or-worse">{{ score }}</td>
-                    {% elif score - round.pars[loop.index + 9] == 2 %}
-                        <td class="double-bogey">{{ score }}</td>
-                    {% elif score - round.pars[loop.index + 9] == 0 %}
-                        <td class="par">{{ score }}</td>
-                    {% elif score - round.pars[loop.index + 9] <= 0 %}
-                        <td class="birdie-or-better">{{ score }}</td>
+                <td>{{ scorecard.strokes[10] }}</td>
+                {% for stroke in scorecard.strokes[11:20] %}
+                    {% if stroke - scorecard.pars[loop.index + 9] >= 3 %}
+                        <td class="triple-bogey-or-worse">{{ stroke }}</td>
+                    {% elif stroke - scorecard.pars[loop.index + 9] == 2 %}
+                        <td class="double-bogey">{{ stroke }}</td>
+                    {% elif stroke - scorecard.pars[loop.index + 9] == 0 %}
+                        <td class="par">{{ stroke }}</td>
+                    {% elif stroke - scorecard.pars[loop.index + 9] <= 0 %}
+                        <td class="birdie-or-better">{{ stroke }}</td>
                     {% else %}
-                        <td>{{ score }}</td>
+                        <td>{{ stroke }}</td>
                     {% endif %}
                 {% endfor %}
-                <td>{{ round.scores[20] }}</td>
-                <td>{{ round.scores[21] }}</td>
-                    
-
+                <td>{{ scorecard.strokes[20] }}</td>
+                <td>{{ scorecard.strokes[21] }}</td>
             </tr>
             <tr>
                 <td class="scorecard-header">+/-</td>
-                {% for par in round.to_par %}
+                {% for par in scorecard.to_pars %}
                     <td class="handwritten-score">{{ par }}</td>
                 {% endfor %}
             </tr>
             <tr class="holes-row">
                 <td class="scorecard-header">Par</td>
-                {% for par in round.pars %}
+                {% for par in scorecard.pars %}
                     <td>{{ par }}</td>
                 {% endfor %}
             </tr>
