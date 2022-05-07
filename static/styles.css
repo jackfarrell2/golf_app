@@ -1,9 +1,18 @@
+nav {
+    background-color:#198754;
+    height: 80px;
+}
+
+#nav a {
+    color: white;
+}
 .scorecard
 {
-    margin: auto;
-    width: 70%;
+    margin: 0 auto;
+    width: 900px;
     font-size: medium;
     text-align: center;
+    padding-top: 30px;
 }
 
 .holes-row
@@ -11,8 +20,24 @@
     background-color: black;
     text-align: center;
     color:white;
-
 }
+
+td.triple-bogey-or-worse {
+    background-color: #caadc5;
+}
+
+td.birdie-or-better {
+    background-color: #95ef86;
+}
+
+td.par {
+    background-color: #fceb9e;
+}
+
+td.double-bogey {
+    background-color: #ff8f8f;
+}
+
 
 .scorecard-header
 {
@@ -24,4 +49,16 @@
     text-align: center;
     background-color: rgb(161, 149, 149);
     color: black;
+}
+
+.scorecard-course-name
+{
+    margin: 0px;
+    float: left;
+}
+
+.scorecard-course-date
+{
+    margin: 0px;
+    float: right;
 }
