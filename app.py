@@ -3,6 +3,7 @@ import sys
 from flask import Flask, render_template, request
 import sqlite3
 import os
+from golf_functions import par_shift
 
 # Configure application
 app = Flask(__name__)
@@ -81,23 +82,35 @@ def rounds():
             pars.append(course_info[0][13])
 
             # Create a to_par list to populate players relation to par on each scorecard
-            to_par = []
             par_tracker = 0
             to_par_front = []
             to_par_back = []
             for i in range(9):
                 to_this_par = scores[i + 1] - pars[i]
                 if to_this_par == 0: # If the par_count should remain unchanged
-                    if par_tracker == 0:
-                        to_par_front.append("E")
-                    else:
-                        to_par_front.append(str(par_tracker))
+                    to_par_front.append(par_shift(par_tracker))
                 else: # If the par_count should increase or decrease
-                    to_par_front.append(str(par_tracker))
-            print(to_par_front, file=sys.stderr)
+                    par_tracker += to_this_par
+                    to_par_front.append(par_shift(par_tracker))
+            to_par_front.append(par_shift(par_tracker))
+            par_tracker = 0
+            for i in range(9):
+                to_this_par = scores[i + 11] - pars[i + 10]
+                if to_this_par == 0:  # If the par_count should remain unchanged
+                    if par_tracker == 0:
+                        to_par_back.append(par_shift(par_tracker))
+                    else:
+                        to_par_back.append(par_shift(par_tracker))
+                else:  # If the par_count should increase or decrease
+                    par_tracker += to_this_par
+                    to_par_back.append(par_shift(par_tracker))
+            to_par_back.append(par_shift(par_tracker))
+            to_par_front.extend(to_par_back)
+            total_to_par = int(to_par_front[9]) + int(to_par_front[19])
+            to_par_front.append(par_shift(total_to_par))
+            print(scores, file=sys.stderr)
 
-            rounds.append({"yardages": yardages, "handicaps": handicaps, "scores": scores, "pars": pars, "to_par": to_par, "course_name": course_info[0][1], "round_date": round[3]})
-
+            rounds.append({"yardages": yardages, "handicaps": handicaps, "scores": scores, "pars": pars, "to_par": to_par_front, "course_name": course_info[0][1], "round_date": round[3]})
         return render_template("rounds.html", rounds=rounds)
     
 if __name__ == '__main__':

@@ -1,3 +1,7 @@
+body {
+    background-color: white;
+}
+
 nav {
     background-color:#198754;
     height: 80px;
@@ -13,6 +17,8 @@ nav {
     font-size: medium;
     text-align: center;
     padding-top: 30px;
+    padding-bottom: 15px;
+    border-bottom: #cac2c2 1px solid;
 }
 
 .holes-row
@@ -61,4 +67,10 @@ td.double-bogey {
 {
     margin: 0px;
     float: right;
+}
+
+.handwritten-score
+{
+    font-family: ink free;
+    font-weight: semibold;
 }

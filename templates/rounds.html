@@ -42,29 +42,44 @@ Rounds
                     <td></td>
                 {% endfor %}
             </tr>
-            <tr class="scores-row">
+            <tr class="handwritten-score">
                 <td class="scorecard-header">{{ round.scores[0] }}</td>
-                {% for score in round.scores[1:] %}
-                    <td>{{ score }}</td>
-                    <!-- {% if round["pars"][round.scores.index(score) - 1] - 1 <= 1 %}
-                        <td class="birdie-or-better">{{ score }}</td>
-                    {% elif score - round["pars"][round.scores.index(score) - 1] == 0 %}
-                        <td class="par">{{ score }}</td>
-                    {% elif score - round["pars"][round.scores.index(score) - 1] == 2 %}
-                        <td class="double-bogey">{{ score }}</td>
-                    {% elif score - round["pars"][round.scores.index(score) - 1] >= 3 %}
+                {% for score in round.scores[1:10] %}
+                    {% if score - round.pars[loop.index - 1] >= 3 %}
                         <td class="triple-bogey-or-worse">{{ score }}</td>
+                    {% elif score - round.pars[loop.index - 1] == 2 %}
+                        <td class="double-bogey">{{ score }}</td>
+                    {% elif score - round.pars[loop.index - 1] == 0 %}
+                        <td class="par">{{ score }}</td>
+                    {% elif score - round.pars[loop.index - 1] <= 0 %}
+                        <td class="birdie-or-better">{{ score }}</td>
                     {% else %}
                         <td>{{ score }}</td>
-                    {% endif %} -->
+                    {% endif %}
                 {% endfor %}
+                <td>{{ round.scores[10] }}</td>
+                {% for score in round.scores[11:20] %}
+                    {% if score - round.pars[loop.index + 9] >= 3 %}
+                        <td class="triple-bogey-or-worse">{{ score }}</td>
+                    {% elif score - round.pars[loop.index + 9] == 2 %}
+                        <td class="double-bogey">{{ score }}</td>
+                    {% elif score - round.pars[loop.index + 9] == 0 %}
+                        <td class="par">{{ score }}</td>
+                    {% elif score - round.pars[loop.index + 9] <= 0 %}
+                        <td class="birdie-or-better">{{ score }}</td>
+                    {% else %}
+                        <td>{{ score }}</td>
+                    {% endif %}
+                {% endfor %}
+                <td>{{ round.scores[20] }}</td>
+                <td>{{ round.scores[21] }}</td>
                     
 
             </tr>
             <tr>
                 <td class="scorecard-header">+/-</td>
-                {% for par in to_pars %}
-                    <td>{{ par }}</td>
+                {% for par in round.to_par %}
+                    <td class="handwritten-score">{{ par }}</td>
                 {% endfor %}
             </tr>
             <tr class="holes-row">
