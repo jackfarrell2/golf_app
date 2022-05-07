@@ -5,12 +5,14 @@ Rounds
 {% endblock %}
 
 {% block main %}
+<!-- Prints scorecards for a given golfer -->
 <div id="content" class="container-sm"> 
     {% for scorecard in scorecards %}
     <div id="scorecard" class="scorecard">
         <p class="scorecard-course-name">{{ scorecard.course_name }}</p>
         <p class="scorecard-course-date">{{ scorecard.round_date }}</p>
         <table class="table table-sm">
+            <!-- Holes -->
             <tr class="holes-row">
                 <th class="scorecard-header">Hole</th>
                 {% for i in range(9) %}
@@ -23,12 +25,14 @@ Rounds
                     <th>IN</th>
                     <th>TOT</th>
             </tr>
+            <!-- Yardages -->
             <tr>
                 <td class="scorecard-header">{{ scorecard.yardages[0] }}</td>
                 {% for yard in scorecard.yardages[1:] %}
                     <td>{{ yard }}</td>
                 {% endfor %}
             </tr>
+            <!-- Handicaps -->
             <tr class="handicap-row">
                 <td class="scorecard-header">Handicap</td>
                 {% for handicap in scorecard.handicaps[:9] %} 
@@ -42,6 +46,7 @@ Rounds
                     <td></td>
                 {% endfor %}
             </tr>
+            <!-- Strokes -->
             <tr class="handwritten-score">
                 <td class="scorecard-header">{{ scorecard.strokes[0] }}</td>
                 {% for stroke in scorecard.strokes[1:10] %}
@@ -74,12 +79,14 @@ Rounds
                 <td>{{ scorecard.strokes[20] }}</td>
                 <td>{{ scorecard.strokes[21] }}</td>
             </tr>
+            <!-- To-pars -->
             <tr>
                 <td class="scorecard-header">+/-</td>
                 {% for par in scorecard.to_pars %}
                     <td class="handwritten-score">{{ par }}</td>
                 {% endfor %}
             </tr>
+            <!-- Pars -->
             <tr class="holes-row">
                 <td class="scorecard-header">Par</td>
                 {% for par in scorecard.pars %}

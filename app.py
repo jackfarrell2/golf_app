@@ -23,11 +23,7 @@ def vs():
         golfers = get_golfers()
         return render_template("vs_request.html", golfers=golfers)
     else:
-        golfer_one_name = request.form.get("golfer_name_one")
-        golfer_two_name = request.form.get("golfer_name_two")
-        golfer_one_info = get_golfer_info(golfer_one_name)
-        golfer_two_info = get_golfer_info(golfer_two_name)
-
+        return render_template("vs_request.html", golfers=golfers)
 
 @app.route("/rounds", methods=["GET", "POST"])
 def rounds():

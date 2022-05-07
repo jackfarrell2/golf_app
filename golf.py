@@ -49,10 +49,10 @@ def get_yardages(course_info:list, holes:list) -> list:
     yardages = []
     for i in range(len(holes)):
         yardages.append(holes[i][4])
+    yardages.append(sum(yardages))
+    yardages.insert(9, sum(yardages[:9]))
+    yardages.insert(19, sum(yardages[10:19]))
     yardages.insert(0, course_info[0][14])
-    yardages.insert(10, course_info[0][8])
-    yardages.append(course_info[0][9])
-    yardages.append(course_info[0][9])
     return yardages
 
 def get_handicaps(course:list) -> list:
