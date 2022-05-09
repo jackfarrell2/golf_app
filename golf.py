@@ -1,5 +1,5 @@
 import sqlite3
-from flask import render_template
+import itertools
 
 con = sqlite3.connect("golf.db", check_same_thread=False)
 cur = con.cursor()
@@ -39,6 +39,20 @@ def get_rounds(golfer:str) -> list:
     id_query = cur.execute("SELECT id FROM golfers WHERE name = (?)", (golfer,))
     id_query = id_query.fetchone()[0]
     round_query = cur.execute("SELECT * FROM rounds WHERE golfer_id = (?) ORDER BY id DESC", (id_query,))
+    rounds = round_query.fetchall()
+    return rounds
+
+def get_vs_rounds(golfer_one: str, golfer_two:str) -> list:
+    """Returns all rounds golfer one has played in a match vs golfer two"""
+    rounds = []
+    golfer_one_query = cur.execute("SELECT id FROM golfers WHERE name = (?)", (golfer_one,))
+    golfer_one_query = golfer_one_query.fetchone()[0]
+    golfer_two_query = cur.execute("SELECT id FROM golfers WHERE name = (?)", (golfer_two,))
+    golfer_two_query = golfer_two_query.fetchone()[0]
+    # round_query = cur.execute("SELECT * FROM (SELECT * FROM rounds WHERE match_id IN (SELECT match_id FROM rounds GROUP BY match_id HAVING COUNT (*) > 1) AND golfer_id = (?) OR golfer_id = (?)) as a WHERE golfer_id = (?)", (golfer_one, golfer_one, golfer_two,))
+    statement = "SELECT * FROM (SELECT * FROM rounds WHERE match_id IN (SELECT match_id FROM rounds GROUP BY match_id HAVING COUNT (*) > 1) AND golfer_id = ? OR golfer_id = ?) as a WHERE golfer_id = ?"
+    params = [golfer_one_query, golfer_two_query, golfer_one_query]
+    round_query = cur.execute(statement, params)
     rounds = round_query.fetchall()
     return rounds
 

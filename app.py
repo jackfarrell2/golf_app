@@ -3,7 +3,7 @@ import sys
 from flask import Flask, render_template, request
 import sqlite3
 import os
-from golf import get_scorecards, get_golfers, get_rounds, get_stats, apology
+from golf import get_scorecards, get_golfers, get_rounds, get_stats, get_vs_rounds
 
 # Configure application
 app = Flask(__name__)
@@ -33,19 +33,19 @@ def vs():
         golfers = get_golfers()
         return render_template("vs_request.html", golfers=golfers)
     else:
+        # Print the two users statistics
         all_golfer_stats = []
         golfer_one_name = request.form.get("golfer_one_name")
         golfer_two_name = request.form.get("golfer_two_name")
         if golfer_one_name == golfer_two_name : return render_template("apology.html", message="Can't Compare The Same Golfer")
-            
-        golfers = [{'golfer_name':golfer_one_name}, {'golfer_name': golfer_two_name}]
-        for golfer in golfers:
-            golfer_name = golfer['golfer_name']
-            golfers_rounds = get_rounds(golfer_name)
-            if len(golfers_rounds) >= 1:
-                stats = get_stats(golfers_rounds, golfer_name)
-                all_golfer_stats.append(stats)
-        return render_template("homepage.html", all_golfer_stats=all_golfer_stats)
+        else:
+            golfer_one_rounds = get_vs_rounds(golfer_one_name, golfer_two_name)
+            stats = get_stats(golfer_one_rounds, golfer_one_name)
+            all_golfer_stats.append(stats)
+            golfer_two_rounds = get_vs_rounds(golfer_two_name, golfer_one_name)
+            stats = get_stats(golfer_two_rounds, golfer_two_name)
+            all_golfer_stats.append(stats)
+        return render_template("vs.html", all_golfer_stats=all_golfer_stats)
 
 @app.route("/rounds", methods=["GET", "POST"])
 @app.route("/rounds/<golfer_name>", methods=["GET", "POST"])
@@ -65,7 +65,6 @@ def rounds(golfer_name="lampsha"):
                 return render_template("rounds.html", scorecards=scorecards)  
         else:
             return render_template("round_request.html", golfers=golfers)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
