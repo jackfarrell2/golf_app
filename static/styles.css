@@ -10,8 +10,8 @@ nav {
 #nav a {
     color: white;
 }
-.scorecard
-{
+
+.scorecard {
     margin: 0 auto;
     width: 900px;
     font-size: medium;
@@ -78,4 +78,8 @@ td.double-bogey {
 .resize {
     width: 400px;
     height: auto;
+}
+
+.record {
+    padding-bottom: 15px;
 }

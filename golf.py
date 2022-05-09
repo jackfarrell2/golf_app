@@ -219,6 +219,57 @@ def count_mades(strokes:list, pars:list) -> list:
     return made_counter        
 
 
+def get_record(golfer_one_rounds: list, golfer_two_rounds: list, golfer_one_name: str, golfer_two_name: str) -> str:
+    """Returns a record between two golfers given rounds"""
+    record = {"golfer_one_wins": 0, "golfer_two_wins": 0, "draws": 0}
+    for i in range(len(golfer_one_rounds)):
+        # Update running record
+        if sum(golfer_one_rounds[i][4:23]) < sum(golfer_two_rounds[i][4:23]):
+            record["golfer_one_wins"] += 1
+        elif sum(golfer_two_rounds[i][4:23]) < sum(golfer_one_rounds[i][4:23]):
+            record["golfer_two_wins"] += 1
+        else:
+            record["draws"] += 0
+    
+    # Format a string depending on the record
+    if record["golfer_one_wins"] > record["golfer_two_wins"]:
+        record = "{} is {}-{}-{}".format(
+            golfer_one_name, record["golfer_one_wins"], record["golfer_two_wins"], record["draws"])
+    elif record["golfer_two_wins"] > record["golfer_one_wins"]:
+        record = "{} is {}-{}-{}".format(
+            golfer_two_name, record["golfer_two_wins"], record["golfer_one_wins"], record["draws"])
+    else:
+        record = "It is tied {}-{}-{}".format(
+            record["golfer_two_wins"], record["golfer_one_wins"], record["draws"])
+    return record
+
+
+def get_vs_scorecards(golfer_one_rounds, golfer_two_rounds, golfer_one_name, golfer_two_name) -> list:
+    """Returns match scorecards for a given pair of golfers"""
+    scorecards = []
+    for i in range(len(golfer_one_rounds)):
+        course_info = get_course_info(golfer_one_rounds[i])
+        holes = get_holes(golfer_one_rounds[i])
+        course_info = get_course_info(golfer_one_rounds[i])
+        holes = get_holes(golfer_one_rounds[i])
+        yardages = get_yardages(course_info, holes)  # Populate yardages
+        handicaps = get_handicaps(holes)  # Populate handicaps
+        # Populate golfer one strokes
+        one_strokes = get_strokes(golfer_one_rounds[i], golfer_one_name)
+        # Populate golfer two strokes
+        two_strokes = get_strokes(golfer_two_rounds[i], golfer_two_name)
+        pars = get_pars(holes)  # Populate pars
+        # Populate golfer one to pars
+        one_to_pars = get_to_pars(one_strokes, pars)
+        # Populate golfer two to pars
+        two_to_pars = get_to_pars(two_strokes, pars)
+        scorecard = {"yardages": yardages, "handicaps": handicaps, "one_strokes": one_strokes, "two_strokes": two_strokes, "pars": pars, "one_to_pars": one_to_pars, "two_to_pars": two_to_pars, "course_name": course_info[0][1],
+                     "round_date": golfer_one_rounds[i][3]}
+        scorecards.append(scorecard)
+    return scorecards
+
+
+
 def apology(message, code=400):
     """Render message as an apology to user."""
     return render_template("apology.html", code=code, message=message),

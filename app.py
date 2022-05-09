@@ -3,7 +3,7 @@ import sys
 from flask import Flask, render_template, request
 import sqlite3
 import os
-from golf import get_scorecards, get_golfers, get_rounds, get_stats, get_vs_rounds
+from golf import get_scorecards, get_golfers, get_rounds, get_stats, get_vs_rounds, get_record, get_vs_scorecards
 
 # Configure application
 app = Flask(__name__)
@@ -37,15 +37,23 @@ def vs():
         all_golfer_stats = []
         golfer_one_name = request.form.get("golfer_one_name")
         golfer_two_name = request.form.get("golfer_two_name")
-        if golfer_one_name == golfer_two_name : return render_template("apology.html", message="Can't Compare The Same Golfer")
+        if golfer_one_name == golfer_two_name: return render_template("apology.html", message="Can't Compare The Same Golfer") # Ensure different golfer
         else:
+            # Gets golfers stats for only mutual matches
             golfer_one_rounds = get_vs_rounds(golfer_one_name, golfer_two_name)
             stats = get_stats(golfer_one_rounds, golfer_one_name)
             all_golfer_stats.append(stats)
             golfer_two_rounds = get_vs_rounds(golfer_two_name, golfer_one_name)
             stats = get_stats(golfer_two_rounds, golfer_two_name)
             all_golfer_stats.append(stats)
-        return render_template("vs.html", all_golfer_stats=all_golfer_stats)
+            
+            # Gets current record between the two golfers
+            record = get_record(golfer_one_rounds, golfer_two_rounds, golfer_one_name, golfer_two_name)
+
+            # Gets scorecards for each match
+            scorecards = get_vs_scorecards(golfer_one_rounds, golfer_two_rounds, golfer_one_name, golfer_two_name)
+        return render_template("vs.html", record=record, all_golfer_stats=all_golfer_stats, scorecards=scorecards)
+
 
 @app.route("/rounds", methods=["GET", "POST"])
 @app.route("/rounds/<golfer_name>", methods=["GET", "POST"])
