@@ -74,3 +74,8 @@ td.double-bogey {
     font-family: ink free;
     font-weight: semibold;
 }
+
+.resize {
+    width: 400px;
+    height: auto;
+}

@@ -1,4 +1,5 @@
 import sqlite3
+from flask import render_template
 
 con = sqlite3.connect("golf.db", check_same_thread=False)
 cur = con.cursor()
@@ -11,6 +12,15 @@ def par_shift(score:int) -> str:
         return ("+{}".format(score))
     else:
         return str(score)
+
+def par_shift_reverse(score:str) -> int:
+    """Turns a readable score to a stroke count"""
+    if score == "E":
+        return 0
+    elif score[0] == "+":
+        return int(score[1:])
+    else:
+        return int(score)
 
 def get_golfers() -> list:
     """Returns all golfers names"""
@@ -113,24 +123,90 @@ def get_to_pars(strokes:list, pars:list) -> list:
     to_par_front.append(par_shift(total_to_par))
     return to_par_front
 
-def get_scorecards(rounds:list, golfer_name:str) -> list:
+def get_scorecards(matches:list, golfer_name:str) -> list:
     """Returns scorecards for a given golfer"""
     scorecards = []
-    for round in rounds:
-        course_info = get_course_info(round)
-        holes = get_holes(round)
-        course_info = get_course_info(round)
-        holes = get_holes(round)
+    for match in matches:
+        course_info = get_course_info(match)
+        holes = get_holes(match)
+        course_info = get_course_info(match)
+        holes = get_holes(match)
         yardages = get_yardages(course_info, holes)  # Populate yardages
         handicaps = get_handicaps(holes)  # Populate handicaps
-        strokes = get_strokes(round, golfer_name)  # Populate strokes
+        strokes = get_strokes(match, golfer_name)  # Populate strokes
         pars = get_pars(holes)  # Populate pars
         to_pars = get_to_pars(strokes, pars)  # Populate to pars
         scorecard = {"yardages": yardages, "handicaps": handicaps, "strokes": strokes, "pars": pars, "to_pars": to_pars, "course_name": course_info[0][1],
-                        "round_date": round[3]}
+                        "round_date": match[3]}
         scorecards.append(scorecard)
     return scorecards
 
+def get_stats(rounds:list, golfer:str) -> list:
+    """Returns all current statistics for a given golfer"""
+    to_par_counter = 0 # Track the lifetime to-par score to output a score that can be adjusted for par 72
+    best_score_checker = 200 # To check if a round should replace golfers current best score
+    made_counts = [0, 0, 0, 0, 0, 0, 0] # How many llifetime eagles to maxes made in that order
+    pars_played = [0, 0, 0] # How many lifetime par 3's to par 5's played
+    pars_strokes = [0, 0, 0] # How many total strokes on each type of par beginning with par 3
+    
+    # Update players stats for each round played
+    for match in rounds:
+        # Get round information
+        holes = get_holes(match) 
+        strokes = get_strokes(match, golfer)
+        pars = get_pars(holes)
+        to_pars = get_to_pars(strokes, pars)
+        mades = count_mades(strokes, pars)
 
+        to_par_counter += par_shift_reverse(to_pars[-1]) # Update lifetime to par score
+        if to_par_counter < best_score_checker: best_score_checker = to_par_counter # Update best round
+        for count, made in enumerate(made_counts): made_counts[count] += mades[count + 1] # Update lifetimes eagles to maxes in that order
+        
+        # Calculate lifetime scores on each type of par
+        strokes = strokes[1:10] + strokes[11:20]
+        pars = pars[:9] + pars[10:19]
+        for count, par in enumerate(pars):
+            if par == 3:
+                pars_played[0] += 1
+                pars_strokes[0] += strokes[count]
+            elif par == 4:
+                pars_played[1] += 1
+                pars_strokes[1] += strokes[count]
+            else:
+                pars_played[2] += 1
+                pars_strokes[2] += strokes[count]
+    
+    # Pass results back        
+    par_three_avg = round(pars_strokes[0] / pars_played[0], 2)   
+    par_four_avg = round(pars_strokes[1] / pars_played[1], 2)
+    par_five_avg = round(pars_strokes[2] / pars_played[2], 2)
+    avg_par = to_par_counter / len(rounds)
+    avg_score = round(avg_par + 72)
+    avg_par = avg_score - 72
+    best_score_checker = "{} ({})".format(par_shift(best_score_checker), best_score_checker + 72)
+    avg_makes = [round(made / len(rounds), 2) for made in made_counts]
+    stats = [golfer, avg_score, par_shift(avg_par), best_score_checker] + avg_makes[1:] + [par_three_avg, par_four_avg, par_five_avg, made_counts[1]]
+    return stats
+
+def count_mades(strokes:list, pars:list) -> list:
+    """Returns a list of how many albatrosses - maxes are made in that order"""
+    made_counter = [0, 0, 0, 0, 0, 0, 0, 0] # How many albatrosses - maxes made in that order
+    strokes = strokes[1:10] + strokes[11:20]
+    pars = pars[:9] + pars[10:19]
+    for par, stroke in enumerate(strokes):
+        if stroke - pars[par] == -3: made_counter[0] += 1
+        if stroke - pars[par] == -2: made_counter[1] += 1
+        if stroke - pars[par] == -1: made_counter[2] += 1
+        if stroke - pars[par] == 0: made_counter[3] += 1
+        if stroke - pars[par] == 1: made_counter[4] += 1
+        if stroke - pars[par] == 2: made_counter[5] += 1
+        if stroke - pars[par] == 3: made_counter[6] += 1
+        if stroke - pars[par] == 4: made_counter[7] += 1
+    return made_counter        
+
+
+def apology(message, code=400):
+    """Render message as an apology to user."""
+    return render_template("apology.html", code=code, message=message),
     
     

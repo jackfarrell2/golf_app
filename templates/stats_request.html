@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Stats
+{% endblock %}
+
+{% block main %}
+<form action="/stats" method="post">
+    <div class="mb-3">
+        <label for="golfer_name"></label>
+        <select name="golfer_name" class="form-select mx-auto w-auto">
+            <option disabled selected>Golfer</option>
+            {% for golfer in golfers %}
+            <option value="{{ golfer.golfer_name }}">{{ golfer.golfer_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button class="btn btn-success btn-med" type="submit">View Statistics</button>
+</form>
+{% endblock %}
