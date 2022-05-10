@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Post a Match
+{% endblock %}
+
+{% block main %}
+<form action="/post" method="post">
+    <div class="mb-3" style="padding-bottom: 15px;">
+        <label for="golfer_name"></label>
+        <select name="golfer_name" class="form-select mx-auto w-auto">
+            <option disabled selected># of Golfers</option>
+            {% for i in range(4) %}
+            <option value=>{{ i + 1 }}</option>
+            {% endfor %}
+        </select>
+        <label for="course_name"></label>
+        <select name="course_name" class="form-select mx-auto w-auto">
+            <option disabled selected>Course</option>
+            {% for course in courses %}
+            <option value="{{ course.course_name }}">{{ course.course_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button class="btn btn-success btn-med" type="submit">Post Match</button>
+</form>
+{% endblock %}

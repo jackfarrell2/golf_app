@@ -24,14 +24,21 @@ def par_shift_reverse(score:str) -> int:
 
 def get_golfers() -> list:
     """Returns all golfers names"""
-    con = sqlite3.connect("golf.db", check_same_thread=False)
-    cur = con.cursor()
     golfers = []
     golfer_query = cur.execute("SELECT name FROM golfers ORDER BY name")
     golfer_query = golfer_query.fetchall()
     for golfer in golfer_query:
         golfers.append({"golfer_name": golfer[0]})
     return golfers
+
+def get_courses() -> list:
+    """Returns all golfers names"""
+    courses = []
+    course_query = cur.execute("SELECT name FROM courses ORDER BY name")
+    course_query = course_query.fetchall()
+    for course in course_query:
+        courses.append({"course_name": course[0]})
+    return courses
 
 def get_rounds(golfer:str) -> list: 
     """Returns all rounds golfer has played"""
@@ -133,7 +140,7 @@ def get_to_pars(strokes:list, pars:list) -> list:
             to_par_back.append(par_shift(par_tracker))
     to_par_back.append(par_shift(par_tracker))
     to_par_front.extend(to_par_back)
-    total_to_par = int(to_par_front[9]) + int(to_par_front[19])
+    total_to_par = int(to_par_front[9][1:3]) + int(to_par_front[19][1:3])
     to_par_front.append(par_shift(total_to_par))
     return to_par_front
 
@@ -267,11 +274,4 @@ def get_vs_scorecards(golfer_one_rounds, golfer_two_rounds, golfer_one_name, gol
                      "round_date": golfer_one_rounds[i][3]}
         scorecards.append(scorecard)
     return scorecards
-
-
-
-def apology(message, code=400):
-    """Render message as an apology to user."""
-    return render_template("apology.html", code=code, message=message),
-    
     

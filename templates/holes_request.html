@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Holes
+{% endblock %}
+
+{% block main %}
+<form action="/holes" method="post">
+    <div class="mb-3" style="padding-bottom: 15px;">
+        <label for="golfer_name"></label>
+        <select name="golfer_name" class="form-select mx-auto w-auto">
+            <option disabled selected>Golfer</option>
+            {% for golfer in golfers %}
+            <option value="{{ golfer.golfer_name }}">{{ golfer.golfer_name }}</option>
+            {% endfor %}
+        </select>
+        <label for="course_name"></label>
+        <select name="course_name" class="form-select mx-auto w-auto">
+            <option disabled selected>Course</option>
+            {% for course in courses %}
+            <option value="{{ course.course_name }}">{{ course.course_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button class="btn btn-success btn-med" type="submit">See Hole Data</button>
+</form>
+{% endblock %}
