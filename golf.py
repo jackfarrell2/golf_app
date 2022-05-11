@@ -45,7 +45,7 @@ def get_rounds(golfer:str) -> list:
     rounds = []
     id_query = cur.execute("SELECT id FROM golfers WHERE name = (?)", (golfer,))
     id_query = id_query.fetchone()[0]
-    round_query = cur.execute("SELECT * FROM rounds WHERE golfer_id = (?) ORDER BY id DESC", (id_query,))
+    round_query = cur.execute("SELECT * FROM rounds WHERE golfer_id = (?) ORDER BY date DESC", (id_query,))
     rounds = round_query.fetchall()
     return rounds
 
@@ -148,8 +148,6 @@ def get_scorecards(matches:list, golfer_name:str) -> list:
     """Returns scorecards for a given golfer"""
     scorecards = []
     for match in matches:
-        course_info = get_course_info(match)
-        holes = get_holes(match)
         course_info = get_course_info(match)
         holes = get_holes(match)
         yardages = get_yardages(course_info, holes)  # Populate yardages

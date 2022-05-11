@@ -7,11 +7,11 @@ Post a Match
 {% block main %}
 <form action="/post" method="post">
     <div class="mb-3" style="padding-bottom: 15px;">
-        <label for="golfer_name"></label>
-        <select name="golfer_name" class="form-select mx-auto w-auto">
+        <label for="number_of_golfers"></label>
+        <select name="number_of_golfers" class="form-select mx-auto w-auto">
             <option disabled selected># of Golfers</option>
             {% for i in range(4) %}
-            <option value=>{{ i + 1 }}</option>
+            <option value="{{ i + 1 }}">{{ i + 1 }}</option>
             {% endfor %}
         </select>
         <label for="course_name"></label>

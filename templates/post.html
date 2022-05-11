@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Post
+{% endblock %}
+
+{% block main %}
+<form action="/posted" method="post">
+    <div id="scorecard" style="float:left;">
+        <p><input type="hidden" name="course_name" value="{{ scorecard.course_name }}">{{ scorecard.course_name }}</p>
+        <input type="date" name="round_date" value="{{ date }}">
+        <p class="scorecard-course-date"></p>
+        <table name="golf_table" class="table table-sm table-bordered">
+            <!-- Holes -->
+            <tr class="holes-row">
+                <th class="scorecard-header">Hole</th>
+                {% for i in range(9) %}
+                <th>{{ i + 1 }}</th>
+                {% endfor %}
+                <th>OUT</th>
+                {% for i in range(9) %}
+                <th>{{ i + 10 }}</th>
+                {% endfor %}
+                <th>IN</th>
+                <th>TOT</th>
+            </tr>
+            <!-- Yardages -->
+            <tr>
+                <td class="scorecard-header">{{ scorecard.yardages[0] }}</td>
+                {% for yard in scorecard.yardages[1:] %}
+                <td style="text-align:center">{{ yard }}</td>
+                {% endfor %}
+            </tr>
+            <!-- Handicaps -->
+            <tr class="handicap-row">
+                <td class="scorecard-header">Handicap</td>
+                {% for handicap in scorecard.handicaps[:9] %}
+                <td>{{ handicap }}</td>
+                {% endfor %}
+                <td></td>
+                {% for handicap in scorecard.handicaps[9:] %}
+                <td>{{ handicap }}</td>
+                {% endfor %}
+                {% for i in range(2) %}
+                <td></td>
+                {% endfor %}
+            </tr>
+            <!-- Strokes -->
+            <span name="golfer_amount"></span>
+            {% for i in range(golfer_amount) %}
+            <tr>
+                <td>
+                    <select name="golfer_name_{{ i + 1 }}" class="form-select mx-auto w-auto">
+                    <option disabled selected>Golfer</option>
+                    {% for golfer in golfers %}
+                    <option value="{{ golfer.golfer_name }}">{{ golfer.golfer_name }}</option>
+                    {% endfor %}
+                    </select>
+                </td>
+                {% for j in range(9) %}
+                <td>
+                    <input name="golfer_{{ i + 1 }}_{{ j + 1 }}" type="number" min="1" max="9">
+                </td>
+                {% endfor %}
+                <td>
+                    <input name="front_nine" type="number" min="9" max="100">
+                </td>
+                {% for j in range(9) %}
+                <td>
+                    <input name="golfer_{{ i + 1 }}_{{ j + 10 }}" type="number" min="1" max="9">
+                </td>
+                {% endfor %}
+                <td>
+                    <input name="back_nine" type="number" min="9" max="100">
+                </td>
+                <td>
+                    <input name="total" type="number" min="9" max="100">
+                </td>
+            </tr>
+            {% endfor %}
+            <!-- Pars -->
+            <tr class="holes-row">
+                <td class="scorecard-header">Par</td>
+                {% for par in scorecard.pars %}
+                <td>{{ par }}</td>
+                {% endfor %}
+            </tr>
+        </table>
+    </div>
+    <button class="btn btn-success btn-med" type="submit">Post Match</button>
+</form>
+{% endblock %}

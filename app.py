@@ -1,9 +1,10 @@
 from __future__ import print_function
 import sys
 from flask import Flask, render_template, request
+from datetime import datetime
 import sqlite3
 import os
-from golf import get_scorecards, get_golfers, get_rounds, get_stats, get_vs_rounds, get_record, get_vs_scorecards, get_courses
+from golf import get_scorecards, get_golfers, get_rounds, get_stats, get_vs_rounds, get_record, get_vs_scorecards, get_courses, get_course_info, get_yardages, get_handicaps, get_holes, get_pars, get_strokes, get_to_pars
 
 # Configure application
 app = Flask(__name__)
@@ -62,7 +63,117 @@ def post():
         courses = get_courses()
         return render_template("post_request.html", courses=courses)
     else:
-        return 1
+        # Get default date for input
+        now = datetime.now()
+        date = now.strftime("%Y-%m-%d")
+        golfer_amount = int(request.form.get("number_of_golfers"))
+        course_name = request.form.get("course_name")
+        golfers = get_golfers()
+        single_round = get_one_round(course_name)
+        scorecard = get_post_scorecard(single_round)
+        return render_template("post.html", date=date, scorecard=scorecard, golfer_amount=golfer_amount, golfers=golfers)
+
+@app.route("/posted", methods=["POST"])
+def posted():
+    # Create id for this match
+    match_id = get_match_id()
+    
+    # Get course_id 
+    course_name = request.form.get("course_name")
+    course_id = get_course_id(course_name)
+
+    # Get match date
+    round_date = request.form.get("round_date")
+
+    # Create a list of golfers entered
+    golfer_one = request.form.get("golfer_name_1")
+    golfer_two = request.form.get("golfer_name_2")
+    golfer_three = request.form.get("golfer_name_3")
+    golfer_four = request.form.get("golfer_name_4") 
+    golfers = [golfer_one, golfer_two, golfer_three, golfer_four]
+    for i in range(len(golfers)):
+        if golfers[i] == None: 
+            golfers = golfers[:i]
+            break   
+    golfer_scores = []
+    for i in range(len(golfers)):
+        scores = [0] * 18
+        for j in range(len(scores)):
+            golfer_temp = "golfer_"+ str(i + 1) +"_"+ str(j + 1)
+            scores[j] = request.form.get(golfer_temp) 
+        golfer_scores.append(scores)
+    
+    for i, golfer in enumerate(golfers):
+        golfer_id = get_golfer_id(golfer)
+        golfer_scores[i] = [str(golfer_id), str(course_id), round_date] + golfer_scores[i] + [str(match_id)]
+    
+    for i in range(len(golfers)):
+        commit_round(golfer_scores[i])
+
+    return render_template("homepage.html")
+
+def commit_round(golfer_round):
+    statement = "INSERT INTO rounds (golfer_id, course_id, date, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, match_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" 
+    params = golfer_round
+    cur.execute(statement, params)
+    con.commit()
+
+def get_golfer_id(golfer):
+    golfer_id_query = cur.execute("SELECT id FROM golfers WHERE name = (?)", (golfer, ))
+    golfer_id = golfer_id_query.fetchone()[0]
+    return golfer_id
+
+def get_course_id(course):
+    course_id_query = cur.execute("SELECT id FROM courses WHERE name = (?)", (course, ))
+    course_id = course_id_query.fetchone()[0]
+    return course_id
+
+
+def get_match_id():
+    match_id_query = cur.execute("SELECT MAX(match_id) FROM rounds")
+    match_id = match_id_query.fetchone()[0]
+    match_id += 1
+    return match_id
+
+def get_post_scorecard(matches):
+    for match in matches:
+        course_info = get_course_info(match)
+        holes = get_holes(match)
+        yardages = get_yardages(course_info, holes)
+        handicaps = get_handicaps(holes)
+        pars = get_pars(holes) 
+        scorecard = {"yardages": yardages, "handicaps": handicaps, "pars": pars, "course_name": course_info[0][1]}
+        return scorecard
+
+
+def get_scorecards(matches: list, golfer_name: str) -> list:
+    """Returns scorecards for a given golfer"""
+    scorecards = []
+    for match in matches:
+        course_info = get_course_info(match)
+        holes = get_holes(match)
+        yardages = get_yardages(course_info, holes)  # Populate yardages
+        handicaps = get_handicaps(holes)  # Populate handicaps
+        strokes = get_strokes(match, golfer_name)  # Populate strokes
+        pars = get_pars(holes)  # Populate pars
+        to_pars = get_to_pars(strokes, pars)  # Populate to pars
+        scorecard = {"yardages": yardages, "handicaps": handicaps, "strokes": strokes, "pars": pars, "to_pars": to_pars, "course_name": course_info[0][1],
+                     "round_date": match[3]}
+        scorecards.append(scorecard)
+    return scorecards
+
+def get_one_round(course_name):
+    rounds = []
+    course_query = cur.execute("SELECT * FROM courses WHERE name = (?)", (course_name,))
+    course_id = course_query.fetchone()[0]
+    one_round_query = cur.execute("SELECT * FROM rounds WHERE course_id = (?)", (course_id,))
+    one_round = one_round_query.fetchall()
+    return one_round
+
+
+
+    
+
 
 @app.route("/rounds", methods=["GET", "POST"])
 @app.route("/rounds/<golfer_name>", methods=["GET", "POST"])
