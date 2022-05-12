@@ -1,4 +1,5 @@
 from __future__ import print_function
+from re import L
 import sys
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
@@ -82,36 +83,70 @@ def add_course():
     if request.method == "GET":
         return render_template("add_course.html")
     else: 
-        # course_name = request.form.get("course_name")
-        # rating = request.form.get("rating")
-        # slope = request.form.get("slope")
-        # city = request.form.get("city")
-        # state = request.form.get("state")
-        # yardages = [0] * 21
-        # handicaps = [0] * 18
-        # pars = [0] * 21
-        # for i in range(len(yardages)):
-        #     yardages_temp = "yardages_" + str(i)
-        #     yardages[i] = request.form.get(yardages_temp)
-        # for i in range(len(handicaps)):
-        #     handicaps_temp = "handicaps_" + str(i)
-        #     handicaps[i] = request.form.get(handicaps_temp)
-        # for i in range(len(pars)):
-        #     pars_temp = "pars_" + str(i)
-        #     pars[i] = request.form.get(pars_temp)
-        course_name = 'Twin Hills Country Club'
-        rating = '70.1'
-        slope = '121'
-        city = 'Coventry'
-        state = 'CT'
-        yardages = ['390', '311', '585', '158', '529', '360', '456',
-                    '185', '367', '3341', '175', '372', '321', '226', '387', '540', '165', '410', '300', '2896', '6237']
-        handicaps = ['9', '17', '3', '15', '5', '7', '1',
-                     '13', '11', '14', '12', '8', '4', '2', '10', '16', '6', '18']
-        pars = ['4', '4', '5', '3', '5', '4', '4',
-                '3', '4', '36', '3', '4', '4', '3', '4', '5', '3', '4', '4', '34', '70']
-        
+        course_name = request.form.get("course_name")
+        rating = request.form.get("rating")
+        slope = request.form.get("slope")
+        city = request.form.get("city")
+        state = request.form.get("state")
+        yardages = [0] * 21
+        handicaps = [0] * 18
+        pars = [0] * 21
+        for i in range(len(yardages)):
+            yardages_temp = "yardages_" + str(i)
+            yardages[i] = request.form.get(yardages_temp)
+        for i in range(len(handicaps)):
+            handicaps_temp = "handicaps_" + str(i)
+            handicaps[i] = request.form.get(handicaps_temp)
+        for i in range(len(pars)):
+            pars_temp = "pars_" + str(i)
+            pars[i] = request.form.get(pars_temp)
+        add_course(course_name, rating, slope, city, state, yardages, handicaps, pars)
         return redirect(url_for('homepage'))
+
+@app.route("/add_golfer", methods=["GET", "POST"])
+def add_golfer():
+    if request.method == "GET":
+        return render_template("add_golfer.html")
+    else:
+        golfer_name = request.form.get("golfer_name")
+        statement = "INSERT INTO golfers (name) VALUES (?)"
+        params = [golfer_name]
+        cur.execute(statement, params)
+        con.commit()
+        return redirect(url_for('homepage'))
+
+def add_course(course, rating, slope, city, state, yardages, handicaps, pars):
+    # Add info to course table
+    par = pars[-1]
+    yards = yardages[-1]
+    front = yardages[9]
+    back = yardages[-2]
+    total = yardages[-1]
+    par_front = pars[9]
+    par_back = pars[-2]
+    par_total = pars[-1]
+    tees = "White"
+    statement = "INSERT INTO courses (name, par, rating, slope, yards, city, state, front, back, total, par_front, par_back, par_total, tees) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    params = [course, par, rating, slope, yards, city, state, front, back, total, par_front, par_back, par_total, tees]
+    cur.execute(statement, params)
+    con.commit()
+
+    # Add info to holes table
+    course_id = get_course_id(course)
+    yardages = yardages[:9] + yardages[10:-2]
+    pars = pars[:9] + pars[10:-2]
+    for i in range(18):
+        statement = "INSERT INTO holes (course_id, hole_number, par, yardage, handicap) VALUES (?, ?, ?, ?, ?)"
+        params = [course_id, i + 1, pars[i], yardages[i], handicaps[i]]
+        cur.execute(statement, params)
+        con.commit()
+    
+    # Add dummy round
+    statement = "INSERT INTO rounds (golfer_id, course_id, date, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, match_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    empty_strokes = [0] * 18 
+    params = [-1, course_id, "2020-01-01"] + empty_strokes + [-1]   
+    cur.execute(statement, params)
+    con.commit()
 
 @app.route("/posted", methods=["POST"])
 def posted():

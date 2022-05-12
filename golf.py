@@ -235,7 +235,7 @@ def get_record(golfer_one_rounds: list, golfer_two_rounds: list, golfer_one_name
         elif sum(golfer_two_rounds[i][4:23]) < sum(golfer_one_rounds[i][4:23]):
             record["golfer_two_wins"] += 1
         else:
-            record["draws"] += 0
+            record["draws"] += 1
     
     # Format a string depending on the record
     if record["golfer_one_wins"] > record["golfer_two_wins"]:
