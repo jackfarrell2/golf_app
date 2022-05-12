@@ -9,6 +9,7 @@ def par_shift(score:int) -> str:
     if score == 0:
         return ("E")
     elif score > 0:
+        score = round(score)
         return ("+{}".format(score))
     else:
         return str(score)
@@ -57,8 +58,8 @@ def get_vs_rounds(golfer_one: str, golfer_two:str) -> list:
     golfer_two_query = cur.execute("SELECT id FROM golfers WHERE name = (?)", (golfer_two,))
     golfer_two_query = golfer_two_query.fetchone()[0]
     # round_query = cur.execute("SELECT * FROM (SELECT * FROM rounds WHERE match_id IN (SELECT match_id FROM rounds GROUP BY match_id HAVING COUNT (*) > 1) AND golfer_id = (?) OR golfer_id = (?)) as a WHERE golfer_id = (?)", (golfer_one, golfer_one, golfer_two,))
-    statement = "SELECT * FROM (SELECT * FROM rounds WHERE match_id IN (SELECT match_id FROM rounds GROUP BY match_id HAVING COUNT (*) > 1) AND golfer_id = ? OR golfer_id = ?) as a WHERE golfer_id = ?"
-    params = [golfer_one_query, golfer_two_query, golfer_one_query]
+    statement = "SELECT * FROM (SELECT * FROM rounds WHERE match_id IN (SELECT match_id FROM (SELECT * FROM rounds WHERE golfer_id = ? OR golfer_id = ?) as a GROUP BY match_id HAVING COUNT (*) > 1) AND golfer_id = ? OR golfer_id = ?) as b WHERE golfer_id = ?"
+    params = [golfer_one_query, golfer_two_query, golfer_one_query, golfer_two_query, golfer_one_query]
     round_query = cur.execute(statement, params)
     rounds = round_query.fetchall()
     return rounds
@@ -93,14 +94,14 @@ def get_handicaps(course:list) -> list:
         handicaps.append(course[i][5])
     return handicaps
 
-def get_strokes(round:tuple, golfer:str) -> list:
+def get_strokes(match:tuple, golfer:str) -> list:
     """Returns a players strokes on a given round"""
     strokes = []
     for i in range(18):
-        strokes.append(round[i + 4])
-    strokes.append(sum(strokes))
-    strokes.insert(9, sum(strokes[:9]))
-    strokes.insert(19, sum(strokes[10:19]))
+        strokes.append(match[i + 4])
+    strokes.append(round(sum(strokes), 1))
+    strokes.insert(9, round(sum(strokes[:9]), 1))
+    strokes.insert(19, round(sum(strokes[10:19]), 1))
     strokes.insert(0, golfer)
     return strokes
 
@@ -120,7 +121,7 @@ def get_to_pars(strokes:list, pars:list) -> list:
     to_par_front = []
     to_par_back = []
     for i in range(9):
-        to_this_par = strokes[i + 1] - pars[i]
+        to_this_par = round(strokes[i + 1] - pars[i], 2)
         if to_this_par == 0:  # If the par_count should remain unchanged
             to_par_front.append(par_shift(par_tracker))
         else:  # If the par_count should increase or decrease
@@ -129,7 +130,7 @@ def get_to_pars(strokes:list, pars:list) -> list:
     to_par_front.append(par_shift(par_tracker))
     par_tracker = 0
     for i in range(9):
-        to_this_par = strokes[i + 11] - pars[i + 10]
+        to_this_par = round(strokes[i + 11] - pars[i + 10], 2)
         if to_this_par == 0:  # If the par_count should remain unchanged
             if par_tracker == 0: 
                 to_par_back.append(par_shift(par_tracker))
@@ -204,7 +205,7 @@ def get_stats(rounds:list, golfer:str) -> list:
     avg_par = avg_score - 72
     best_score_checker = "{} ({})".format(par_shift(best_score_checker), best_score_checker + 72)
     avg_makes = [round(made / len(rounds), 2) for made in made_counts]
-    stats = [golfer, avg_score, par_shift(avg_par), best_score_checker] + avg_makes[1:] + [par_three_avg, par_four_avg, par_five_avg, made_counts[1]]
+    stats = [golfer, avg_score, par_shift(avg_par), best_score_checker] + avg_makes[1:] + [par_three_avg, par_four_avg, par_five_avg, made_counts[0]]
     return stats
 
 def count_mades(strokes:list, pars:list) -> list:

@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Post
+{% endblock %}
+
+{% block main %}
+<form action="/add_course" method="post">
+<div style="float:left;">
+<label class="form" for="course_name">Course Name:  </label>
+<input class="form" name="course_name" type="text" id="course_name" style="margin-bottom:15px; text-align: center;" size="50"><br><br><br>
+<label class="form" for="rating">Total Rating (I.e. 69.4):  </label>
+<input class="form" name="rating" type="number" step="0.01" id="rating" style="margin-bottom:15px; text-align: center;"><br><br><br>
+<label class="form" for="slope">Total Slope (I.e. 127):  </label>
+<input class="form" name="slope" type="number" id="slope" style="margin-bottom:15px; text-align: center;"><br><br><br>
+<label class="form" for="city">City (I.e. Manchester):  </label>
+<input class="form" name="city" type="text" id="city" style="margin-bottom:15px; text-align: center;" size="50"><br><br><br>
+<label class="form" for="state">City (I.e. CT):  </label>
+<input class="form" name="state" type="text" id="state" style="margin-bottom:15px; text-align: center;" size="50"><br><br><br>
+</div>
+    <div class="mb-3" id="scorecard">
+        <table cellpadding="300" name="golf_table" class="table table-sm table-bordered">
+            <!-- Holes -->
+            <tr class="holes-row">
+                <th class="scorecard-header">Hole</th>
+                {% for i in range(9) %}
+                <th>{{ i + 1 }}</th>
+                {% endfor %}
+                <th>OUT</th>
+                {% for i in range(9) %}
+                <th>{{ i + 10 }}</th>
+                {% endfor %}
+                <th>IN</th>
+                <th>TOT</th>
+            </tr>
+            <!-- Yardages -->
+            <tr>
+                <td class="scorecard-header">Yardages</td>
+                {% for i in range(21) %}
+                <td>
+                    <input name="yardages_{{ i }}" type="number" min="1" max="10000">
+                </td>
+                {% endfor %}
+            </tr>
+            <!-- Handicaps -->
+            <tr class="handicap-row">
+                <td class="scorecard-header">Handicap</td>
+                {% for i in range(9) %}
+                <td>
+                    <input name="handicaps_{{ i }}" type="number", min="1" max="18">
+                </td>
+                {% endfor %}
+                <td></td>
+                {% for i in range(9) %}
+                <td>
+                    <input name="handicaps_{{ i + 9 }}" type="number" , min="1" max="18">
+                </td>
+                {% endfor %}
+                <td></td><td></td>
+            </tr>
+            <!-- Pars -->
+            <tr class="holes-row">
+                <td class="scorecard-header">Par</td>
+                {% for i in range(21) %}
+                <td>
+                    <input name="pars_{{ i }}" type="number" min="1", max="100">
+                </td>
+                {% endfor %}
+            </tr>
+        </table>
+    </div>
+    <button class="btn btn-success btn-med" type="submit">Post Match</button>
+</form>
+{% endblock %}

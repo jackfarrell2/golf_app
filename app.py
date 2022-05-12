@@ -1,6 +1,6 @@
 from __future__ import print_function
 import sys
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
 import sqlite3
 import os
@@ -24,8 +24,10 @@ def homepage():
         if len(golfers_rounds) >= 1: 
             stats = get_stats(golfers_rounds, golfer_name)
             all_golfer_stats.append(stats)
-    return render_template("homepage.html", all_golfer_stats=all_golfer_stats)
+    def sorter(e): return e[1]
+    all_golfer_stats.sort(key=sorter)
 
+    return render_template("homepage.html", all_golfer_stats=all_golfer_stats)
 
 @app.route("/vs", methods=["GET", "POST"])
 def vs():
@@ -53,6 +55,8 @@ def vs():
 
             # Gets scorecards for each match
             scorecards = get_vs_scorecards(golfer_one_rounds, golfer_two_rounds, golfer_one_name, golfer_two_name)
+        def sorter(e): return e[1]
+        all_golfer_stats.sort(key=sorter)
         return render_template("vs.html", record=record, all_golfer_stats=all_golfer_stats, scorecards=scorecards)
 
 
@@ -72,6 +76,42 @@ def post():
         single_round = get_one_round(course_name)
         scorecard = get_post_scorecard(single_round)
         return render_template("post.html", date=date, scorecard=scorecard, golfer_amount=golfer_amount, golfers=golfers)
+
+@app.route("/add_course", methods=["GET", "POST"])
+def add_course():
+    if request.method == "GET":
+        return render_template("add_course.html")
+    else: 
+        # course_name = request.form.get("course_name")
+        # rating = request.form.get("rating")
+        # slope = request.form.get("slope")
+        # city = request.form.get("city")
+        # state = request.form.get("state")
+        # yardages = [0] * 21
+        # handicaps = [0] * 18
+        # pars = [0] * 21
+        # for i in range(len(yardages)):
+        #     yardages_temp = "yardages_" + str(i)
+        #     yardages[i] = request.form.get(yardages_temp)
+        # for i in range(len(handicaps)):
+        #     handicaps_temp = "handicaps_" + str(i)
+        #     handicaps[i] = request.form.get(handicaps_temp)
+        # for i in range(len(pars)):
+        #     pars_temp = "pars_" + str(i)
+        #     pars[i] = request.form.get(pars_temp)
+        course_name = 'Twin Hills Country Club'
+        rating = '70.1'
+        slope = '121'
+        city = 'Coventry'
+        state = 'CT'
+        yardages = ['390', '311', '585', '158', '529', '360', '456',
+                    '185', '367', '3341', '175', '372', '321', '226', '387', '540', '165', '410', '300', '2896', '6237']
+        handicaps = ['9', '17', '3', '15', '5', '7', '1',
+                     '13', '11', '14', '12', '8', '4', '2', '10', '16', '6', '18']
+        pars = ['4', '4', '5', '3', '5', '4', '4',
+                '3', '4', '36', '3', '4', '4', '3', '4', '5', '3', '4', '4', '34', '70']
+        
+        return redirect(url_for('homepage'))
 
 @app.route("/posted", methods=["POST"])
 def posted():
@@ -110,7 +150,7 @@ def posted():
     for i in range(len(golfers)):
         commit_round(golfer_scores[i])
 
-    return render_template("homepage.html")
+    return redirect(url_for('homepage'))
 
 def commit_round(golfer_round):
     statement = "INSERT INTO rounds (golfer_id, course_id, date, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, match_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" 
@@ -208,13 +248,12 @@ def holes():
         current_holes_sum = [0] * 18
         avg_scores = [0] * 18
         course_copy = tuple(course_rounds[0][:4])
-        for round in course_rounds:
-            round = round[4:22]
-            for i in range(len(round)):
-                current_holes_sum[i] += round[i]
+        for match in course_rounds:
+            match = match[4:22]
+            for i in range(len(match)):
+                current_holes_sum[i] += match[i]
         for i in range(len(avg_scores)):
-            avg_scores[i] = current_holes_sum[i] / len(course_rounds)
-        avg_scores.append(1)
+            avg_scores[i] = round(current_holes_sum[i] / len(course_rounds), 1)
         finalized_round = [course_copy + tuple(avg_scores)]
         scorecards = get_scorecards(finalized_round, golfer_name)
         return render_template("holes.html", scorecards=scorecards)

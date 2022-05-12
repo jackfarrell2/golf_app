@@ -49,13 +49,13 @@ Rounds
             <tr class="handwritten-score">
                 <td class="scorecard-header">{{ scorecard.strokes[0] }}</td>
                 {% for stroke in scorecard.strokes[1:10] %}
-                    {% if stroke - scorecard.pars[loop.index - 1] >= 3 %}
+                    {% if stroke - scorecard.pars[loop.index - 1] >= 2.5 %}
                         <td class="triple-bogey-or-worse">{{ stroke }}</td>
-                    {% elif stroke - scorecard.pars[loop.index - 1] >= 1.5 and stroke - scorecard.pars[loop.index - 1] <= 2.5 %}
+                    {% elif stroke - scorecard.pars[loop.index - 1] >= 1.5 and stroke - scorecard.pars[loop.index - 1] < 2.5 %}
                         <td class="double-bogey">{{ stroke }}</td>
-                    {% elif stroke - scorecard.pars[loop.index - 1] >= 0.5 and stroke - scorecard.pars[loop.index - 1] <= 1.5 %}
+                    {% elif stroke - scorecard.pars[loop.index - 1] >= -0.5 and stroke - scorecard.pars[loop.index - 1] < 0.5 %}
                         <td class="par">{{ stroke }}</td>
-                    {% elif stroke - scorecard.pars[loop.index - 1] <= -0.5 and stroke - scorecard.pars[loop.index - 1] <= 0.5 %} 
+                    {% elif stroke - scorecard.pars[loop.index - 1] < -0.5 %} 
                         <td class="birdie-or-better">{{ stroke }}</td>
                     {% else %}
                         <td>{{ stroke }}</td>
@@ -63,13 +63,13 @@ Rounds
                 {% endfor %}
                     <td>{{ scorecard.strokes[10] }}</td>
                     {% for stroke in scorecard.strokes[11:20] %}
-                        {% if stroke - scorecard.pars[loop.index + 9] >= 3 %}
+                        {% if stroke - scorecard.pars[loop.index + 9] >= 2.5 %}
                             <td class="triple-bogey-or-worse">{{ stroke }}</td>
-                        {% elif stroke - scorecard.pars[loop.index - 1] >= 1.5 and stroke - scorecard.pars[loop.index - 1] <= 2.5 %}
+                        {% elif stroke - scorecard.pars[loop.index + 9] >= 1.5 and stroke - scorecard.pars[loop.index + 9] < 2.5 %}
                             <td class="double-bogey">{{ stroke }}</td>
-                        {% elif stroke - scorecard.pars[loop.index + 9] >= 0.5 and stroke - scorecard.pars[loop.index - 1] <= 1.5 %}
+                        {% elif stroke - scorecard.pars[loop.index + 9] >= -0.5 and stroke - scorecard.pars[loop.index + 9] < 0.5 %}
                             <td class="par">{{ stroke }}</td>
-                        {% elif stroke - scorecard.pars[loop.index + 9] <= -0.5 and stroke - scorecard.pars[loop.index - 1] <= 0.5 %} 
+                        {% elif stroke - scorecard.pars[loop.index + 9] < -0.5 %} 
                             <td class="birdie-or-better">{{ stroke }}</td>
                         {% else %}
                             <td>{{ stroke }}</td>
