@@ -5,8 +5,10 @@ Vs
 {% endblock %}
 
 {% block main %}
+<!-- Form to request stats between two golfers -->
 <form action="/vs" method="post">
     <div class="mb-3" style="padding-bottom: 15px;">
+        <!-- Golfer one -->
         <label for="golfer_name"></label>
         <select name="golfer_one_name" class="form-select mx-auto w-auto">
             <option disabled selected>Golfer 1</option>
@@ -14,6 +16,7 @@ Vs
             <option value="{{ golfer.golfer_name }}">{{ golfer.golfer_name }}</option>
             {% endfor %}
         </select>
+        <!-- Golfer two -->
         <label for="golfer_name"></label>
         <select name="golfer_two_name" class="form-select mx-auto w-auto">
             <option disabled selected>Golfer 2</option>

@@ -5,8 +5,10 @@ Holes
 {% endblock %}
 
 {% block main %}
+<!-- Display golfers and courses to see hole data -->
 <form action="/holes" method="post">
     <div class="mb-3" style="padding-bottom: 15px;">
+        <!-- Golfers -->
         <label for="golfer_name"></label>
         <select name="golfer_name" class="form-select mx-auto w-auto">
             <option disabled selected>Golfer</option>
@@ -14,6 +16,7 @@ Holes
             <option value="{{ golfer.golfer_name }}">{{ golfer.golfer_name }}</option>
             {% endfor %}
         </select>
+        <!-- Courses -->
         <label for="course_name"></label>
         <select name="course_name" class="form-select mx-auto w-auto">
             <option disabled selected>Course</option>

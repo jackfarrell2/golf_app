@@ -5,8 +5,10 @@
     {% endblock %}
 
     {% block main %}
+    <!-- Form to request posting a match -->
     <form action="/post" method="post">
         <div class="mb-3" style="padding-bottom: 15px;">
+            <!-- Number of golfers -->
             <label for="number_of_golfers"></label>
             <select name="number_of_golfers" class="form-select mx-auto w-auto">
                 <option disabled selected># of Golfers</option>
@@ -14,6 +16,7 @@
                 <option value="{{ i + 1 }}">{{ i + 1 }}</option>
                 {% endfor %}
             </select>
+            <!-- Course name -->
             <label for="course_name"></label>
             <select name="course_name" class="form-select mx-auto w-auto">
                 <option disabled selected>Course</option>

@@ -5,10 +5,11 @@ Post a Match
 {% endblock %}
 
 {% block main %}
+<!-- Form to add a new golfer -->
 <form action="/add_golfer" method="post">
     <div class="mb-3" style="padding-bottom: 15px;">
         <label class="form" for="golfer_name"></label>
-        <input placeholder="Golfer Name" name="golfer_name" type="text" id="course_name" style="text-align: center; float:center; margin-bottom:15px;"
+        <input placeholder="Golfer Name" name="golfer_name" type="text" id="course_name" style="text-align: center; float:center; margin-bottom:15px;height:50px"
             size="50">
         <br>
         <button class="btn btn-success btn-med" type="submit">Add Golfer</button>

@@ -5,27 +5,31 @@ Vs
 {% endblock %}
 
 {% block main %}
+<!-- Prints stats between two different golfers -->
+<!-- Record -->
 <div id="content" class="container-sm record">
     <h5>{{ record }}</h5>
+    <h6>The statistics below are only for rounds between {{ scorecards[0].one_strokes[0] }} and {{ scorecards[0].two_strokes[0] }}</h6>
 </div>
+<!-- Stats -->
 <div id="content" class="container-sm">
     <table id="myTable" class="table table-bordered table-hover standings">
         <thead class="success">
             <tr style="color:black;background-color:#198754;font-weight:500">
                 <td>Golfer</td>
-                <td onclick="sortTable(0)">Avg Score</td>
+                <td>Avg Score</td>
                 <td>Avg Par</td>
                 <td>Best Score</td>
-                <td onclick="sortTable(0)">Birdies Per</td>
-                <td onclick="sortTable(0)">Pars Per</td>
-                <td onclick="sortTable(0)">Bogeys Per</td>
-                <td onclick="sortTable(0)">Doubles Per</td>
-                <td onclick="sortTable(0)">Triples Per</td>
-                <td onclick="sortTable(0)">Maxes Per</td>
-                <td onclick="sortTable(0)">Par 3 Avg</td>
-                <td onclick="sortTable(0)">Par 4 Avg</td>
-                <td onclick="sortTable(0)">Par 5 Avg</td>
-                <td onclick="sortTable(0)"><img src="static/eagle.png" alt="eagle" width=35 height=35></td>
+                <td>Birdies Per</td>
+                <td>Pars Per</td>
+                <td>Bogeys Per</td>
+                <td>Doubles Per</td>
+                <td>Triples Per</td>
+                <td>Maxes Per</td>
+                <td>Par 3 Avg</td>
+                <td>Par 4 Avg</td>
+                <td>Par 5 Avg</td>
+                <td><img src="static/eagle.png" alt="eagle" width=35 height=35></td>
             </tr>
         </thead>
         {% for golfer in all_golfer_stats %}
@@ -37,6 +41,7 @@ Vs
         {% endfor %}
     </table>
 </div>
+<!-- Scorecards -->
 {% for scorecard in scorecards %}
 <div id="scorecard" class="scorecard">
     <p class="scorecard-course-name">{{ scorecard.course_name }}</p>

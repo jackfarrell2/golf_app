@@ -5,6 +5,7 @@ Post
 {% endblock %}
 
 {% block main %}
+<!-- Form to post a match -->
 <form action="/posted" method="post">
     <div id="scorecard" style="float:center;">
         <p><input type="hidden" name="course_name" value="{{ scorecard.course_name }}">{{ scorecard.course_name }}</p>
@@ -74,7 +75,7 @@ Post
                     <input name="back_nine" type="number" min="9" max="100">
                 </td>
                 <td>
-                    <input name="total" type="number" min="9" max="100">
+                    <input name="total" type="number" min="9" max="150">
                 </td>
             </tr>
             {% endfor %}
