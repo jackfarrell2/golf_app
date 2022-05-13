@@ -5,18 +5,23 @@ Post
 {% endblock %}
 
 {% block main %}
+<p>This will be the information everyone else will use once the course is uploaded, so please ensure everything is accurate.</p>
+<p>Please use the White Tees by default.</p>
 <form action="/add_course" method="post">
-<div style="float:left;">
-<label class="form" for="course_name">Course Name:  </label>
-<input class="form" name="course_name" type="text" id="course_name" style="margin-bottom:15px; text-align: center;" size="50"><br><br><br>
-<label class="form" for="rating">Total Rating (I.e. 69.4):  </label>
-<input class="form" name="rating" type="number" step="0.01" id="rating" style="margin-bottom:15px; text-align: center;"><br><br><br>
-<label class="form" for="slope">Total Slope (I.e. 127):  </label>
-<input class="form" name="slope" type="number" id="slope" style="margin-bottom:15px; text-align: center;"><br><br><br>
-<label class="form" for="city">City (I.e. Manchester):  </label>
-<input class="form" name="city" type="text" id="city" style="margin-bottom:15px; text-align: center;" size="50"><br><br><br>
-<label class="form" for="state">City (I.e. CT):  </label>
-<input class="form" name="state" type="text" id="state" style="margin-bottom:15px; text-align: center;" size="50"><br><br><br>
+<div>
+    <fieldset style="background-color:antiquewhite">
+        <legend>Course Information</legend>
+        <label for="course_name">Course Name:</label>
+        <input name="course_name" type="text" id="course_name" size="20" style="text-align:center">
+        <label for="rating">Rating (I.e. 69.4):</label>
+        <input name="rating" type="text" id="rating" size="1" style="text-align:center">
+        <label for="slope">Slope (I.e. 127):</label>
+        <input name="slope" type="text" id="slope" size="1" style="text-align:center">
+        <label for="city">City (I.e. Manchester):</label>
+        <input name="city" type="text" id="city" size="15" style="text-align:center">
+        <label for="state">State (I.e. CT):</label>
+        <input name="state" type="text" id="state" size="1" style="text-align:center">
+    
 </div>
     <div class="mb-3" id="scorecard">
         <table cellpadding="300" name="golf_table" class="table table-sm table-bordered">

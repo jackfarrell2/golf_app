@@ -1,5 +1,4 @@
 import sqlite3
-import itertools
 
 con = sqlite3.connect("golf.db", check_same_thread=False)
 cur = con.cursor()
@@ -44,9 +43,15 @@ def get_courses() -> list:
 def get_rounds(golfer:str) -> list: 
     """Returns all rounds golfer has played"""
     rounds = []
-    id_query = cur.execute("SELECT id FROM golfers WHERE name = (?)", (golfer,))
+    # Get golfers id
+    statement = "SELECT id FROM golfers WHERE name = (?)"
+    params = [golfer]
+    id_query = cur.execute(statement, params)
     id_query = id_query.fetchone()[0]
-    round_query = cur.execute("SELECT * FROM rounds WHERE golfer_id = (?) ORDER BY date DESC", (id_query,))
+    # Get that golfers rounds
+    statement = "SELECT * FROM rounds WHERE golfer_id = (?) ORDER BY date DESC"
+    params = [id_query]
+    round_query = cur.execute(statement, params)
     rounds = round_query.fetchall()
     return rounds
 
@@ -57,8 +62,7 @@ def get_vs_rounds(golfer_one: str, golfer_two:str) -> list:
     golfer_one_query = golfer_one_query.fetchone()[0]
     golfer_two_query = cur.execute("SELECT id FROM golfers WHERE name = (?)", (golfer_two,))
     golfer_two_query = golfer_two_query.fetchone()[0]
-    # round_query = cur.execute("SELECT * FROM (SELECT * FROM rounds WHERE match_id IN (SELECT match_id FROM rounds GROUP BY match_id HAVING COUNT (*) > 1) AND golfer_id = (?) OR golfer_id = (?)) as a WHERE golfer_id = (?)", (golfer_one, golfer_one, golfer_two,))
-    statement = "SELECT * FROM (SELECT * FROM rounds WHERE match_id IN (SELECT match_id FROM (SELECT * FROM rounds WHERE golfer_id = ? OR golfer_id = ?) as a GROUP BY match_id HAVING COUNT (*) > 1) AND golfer_id = ? OR golfer_id = ?) as b WHERE golfer_id = ?"
+    statement = "SELECT * FROM (SELECT * FROM rounds WHERE match_id IN (SELECT match_id FROM (SELECT * FROM rounds WHERE golfer_id = ? OR golfer_id = ?) as a GROUP BY match_id HAVING COUNT (*) > 1) AND golfer_id = ? OR golfer_id = ?) as b WHERE golfer_id = ? ORDER BY date DESC"
     params = [golfer_one_query, golfer_two_query, golfer_one_query, golfer_two_query, golfer_one_query]
     round_query = cur.execute(statement, params)
     rounds = round_query.fetchall()
@@ -273,4 +277,150 @@ def get_vs_scorecards(golfer_one_rounds, golfer_two_rounds, golfer_one_name, gol
                      "round_date": golfer_one_rounds[i][3]}
         scorecards.append(scorecard)
     return scorecards
+
+def commit_course(course:str, rating:str, slope:str, city:str, state:str, yardages:list, handicaps:list, pars:list) -> None:
+    """Adds a course to the database"""
+    # Strip parts of the course info that matter for the courses db table
+    par = pars[-1]
+    yards = yardages[-1]
+    front = yardages[9]
+    back = yardages[-2]
+    total = yardages[-1]
+    par_front = pars[9]
+    par_back = pars[-2]
+    par_total = pars[-1]
+    tees = "White" # Default White
+    # Add the course to the courses table
+    statement = "INSERT INTO courses (name, par, rating, slope, yards, city, state, front, back, total, par_front, par_back, par_total, tees) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    params = [course, par, rating, slope, yards, city, state,
+              front, back, total, par_front, par_back, par_total, tees]
+    cur.execute(statement, params)
+    con.commit()
+
+    # Add the course's holes to the holes table
+    course_id = get_course_id(course)
+    # Strip the hole data that matters for the holes db table
+    yardages = yardages[:9] + yardages[10:-2]
+    pars = pars[:9] + pars[10:-2]
+    # Update holes table
+    for i in range(18):
+        statement = "INSERT INTO holes (course_id, hole_number, par, yardage, handicap) VALUES (?, ?, ?, ?, ?)"
+        params = [course_id, i + 1, pars[i], yardages[i], handicaps[i]]
+        cur.execute(statement, params)
+        con.commit()
+
+    # Add dummy round (useful for creating scorecards before a round has been played)
+    statement = "INSERT INTO rounds (golfer_id, course_id, date, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, match_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    empty_strokes = [0] * 18 # Dummy strokes
+    params = [-1, course_id, "2020-01-01"] + empty_strokes + [-1] # Golfer_id = -1 so we can filter the rounds out if needed elsewhere
+    cur.execute(statement, params)
+    con.commit()
+
+
+def get_course_rounds(golfer:str, course:str) -> list:
+    """Returns rounds at a given course for a given golfer"""
+    rounds = []
+    id_query = cur.execute(
+        "SELECT id FROM golfers WHERE name = (?)", (golfer,))
+    id_query = id_query.fetchone()[0]
+    course_id_query = cur.execute(
+        "SELECT id from courses WHERE name = (?)", (course,))
+    course_id_query = course_id_query.fetchone()[0]
+    params = [id_query, course_id_query]
+    statement = "SELECT * FROM rounds WHERE golfer_id = ? AND course_id = ? ORDER BY id DESC"
+    round_query = cur.execute(statement, params)
+    rounds = round_query.fetchall()
+    return rounds
+
+
+def get_course_rounds(golfer, course):
+    """Returns rounds at a given course for a given golfer"""
+    rounds = []
+    id_query = cur.execute(
+        "SELECT id FROM golfers WHERE name = (?)", (golfer,))
+    id_query = id_query.fetchone()[0]
+    course_id_query = cur.execute(
+        "SELECT id from courses WHERE name = (?)", (course,))
+    course_id_query = course_id_query.fetchone()[0]
+    params = [id_query, course_id_query]
+    statement = "SELECT * FROM rounds WHERE golfer_id = ? AND course_id = ? ORDER BY id DESC"
+    round_query = cur.execute(statement, params)
+    rounds = round_query.fetchall()
+    return rounds
+
+def get_scorecards(matches: list, golfer_name: str) -> list:
+    """Returns scorecards for a given golfer"""
+    scorecards = []
+    for match in matches:
+        course_info = get_course_info(match)
+        holes = get_holes(match)
+        yardages = get_yardages(course_info, holes)  # Populate yardages
+        handicaps = get_handicaps(holes)  # Populate handicaps
+        strokes = get_strokes(match, golfer_name)  # Populate strokes
+        pars = get_pars(holes)  # Populate pars
+        to_pars = get_to_pars(strokes, pars)  # Populate to pars
+        scorecard = {"yardages": yardages, "handicaps": handicaps, "strokes": strokes, "pars": pars, "to_pars": to_pars, "course_name": course_info[0][1],
+                     "round_date": match[3]}
+        scorecards.append(scorecard)
+    return scorecards
+
+def get_post_scorecard(matches:list) -> dict:
+    """Gets a scorecard with no strokes, for adding rounds"""
+    for match in matches:
+        course_info = get_course_info(match)
+        holes = get_holes(match)
+        yardages = get_yardages(course_info, holes)
+        handicaps = get_handicaps(holes)
+        pars = get_pars(holes)
+        scorecard = {"yardages": yardages, "handicaps": handicaps,
+                     "pars": pars, "course_name": course_info[0][1]}
+        return scorecard
+
+
+def get_one_round(course_name:str) -> list:
+    """Gets one round at a given course"""
+    course_query = cur.execute("SELECT * FROM courses WHERE name = (?)", (course_name,))
+    course_id = course_query.fetchone()[0]
+    one_round_query = cur.execute("SELECT * FROM rounds WHERE course_id = (?)", (course_id,))
+    one_round = one_round_query.fetchall()
+    return one_round
+
+
+def get_golfer_id(golfer:str) -> int:
+    """Finds golfer id for a given golfers name"""
+    golfer_id_query = cur.execute(
+        "SELECT id FROM golfers WHERE name = (?)", (golfer, ))
+    golfer_id = golfer_id_query.fetchone()[0]
+    return golfer_id
+
+def get_course_id(course:str) -> int:
+    """Finds course id for a given course name"""
+    course_id_query = cur.execute(
+        "SELECT id FROM courses WHERE name = (?)", (course, ))
+    course_id = course_id_query.fetchone()[0]
+    return course_id
+
+def commit_golfer(golfer:str) -> None:
+    """Adds a golfer to the database"""
+    statement = "INSERT INTO golfers (name) VALUES (?)"
+    params = [golfer]
+    cur.execute(statement, params)
+    con.commit()
+    return
+
+def commit_round(golfer_round:list) -> None:
+    """Adds a golfer round to the database"""
+    statement = "INSERT INTO rounds (golfer_id, course_id, date, one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, match_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    params = golfer_round
+    cur.execute(statement, params)
+    con.commit()
+    return
+
+
+def get_match_id() -> int:
+    """Returns a unique match id"""
+    match_id_query = cur.execute("SELECT MAX(match_id) FROM rounds")
+    match_id = match_id_query.fetchone()[0]
+    match_id += 1
+    return match_id
     

@@ -9,7 +9,8 @@
     <table id="myTable" class="table table-bordered table-hover standings">
         <thead class="success">
             <tr style="color:black;background-color:#198754;font-weight:500">
-                <td>Standings</td>
+                <td>Golfer</td>
+                <td>Rounds</td>
                 <td onclick="sortTable(0)">Avg Score</td>
                 <td>Avg Par</td>
                 <td>Best Score</td>
@@ -22,7 +23,7 @@
                 <td onclick="sortTable(0)">Par 3 Avg</td>
                 <td onclick="sortTable(0)">Par 4 Avg</td>
                 <td onclick="sortTable(0)">Par 5 Avg</td>
-                <td onclick="sortTable(0)">Eagle Counter</td>
+                <td onclick="sortTable(0)"><img src="static/eagle.png" alt="eagle" width=35 height=35></td>
             </tr>
         </thead>
         {% for golfer in all_golfer_stats %}
