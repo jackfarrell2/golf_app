@@ -158,7 +158,7 @@ def vs():
                                scorecards=scorecards)
 
 
-# Tab to post a new match (and add a course of golfer if necessary)
+# Tab to post a new match (and add a course or golfer if necessary)
 @app.route("/post", methods=["GET", "POST"])
 def post():
     if request.method == "GET":
